@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "crud-mongo"
+version = "0.1.0"
+description = ""
+authors = ["Misha <290819allo@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = {extras = ["all"], version = "^0.110.2"}
+motor = "^3.4.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
