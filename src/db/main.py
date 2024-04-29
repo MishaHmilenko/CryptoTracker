@@ -1,7 +1,11 @@
 import os
 from dataclasses import dataclass
 
-from motor.motor_asyncio import AsyncIOMotorClient
+from beanie import init_beanie
+from fastapi_users.db import BeanieUserDatabase
+from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
+
+from src.db.models.user import User
 
 
 @dataclass
@@ -19,8 +23,17 @@ class DBConfig:
 
 class MongoDB:
     def __init__(self, config: DBConfig):
-        self.client = AsyncIOMotorClient(config.url)
+        self.client = AsyncIOMotorClient(config.url, uuidRepresentation='standard')
         self.db = self.client.get_default_database()
 
 
-mongo = MongoDB(DBConfig())
+async def initialize_beanie(db: AsyncIOMotorDatabase):
+    await init_beanie(database=db, document_models=[User])
+
+
+def get_db():
+    return MongoDB(DBConfig())
+
+
+async def get_db_user() -> BeanieUserDatabase:
+    yield BeanieUserDatabase(User)

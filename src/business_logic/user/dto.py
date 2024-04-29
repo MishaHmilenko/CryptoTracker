@@ -1,13 +1,14 @@
-from pydantic import BaseModel, EmailStr
+from beanie import PydanticObjectId
+from fastapi_users import schemas
 
 
-class UserCreateDTO(BaseModel):
-    name: str
-    email: EmailStr
-    password: str
+class UserCreateDTO(schemas.BaseUserCreate):
+    pass
 
 
-class UserBaseDTO(BaseModel):
-    id: str
-    name: str
-    email: EmailStr
+class UserBaseDTO(schemas.BaseUser[PydanticObjectId]):
+    pass
+
+
+class UserUpdateDTO(schemas.BaseUserUpdate):
+    pass
