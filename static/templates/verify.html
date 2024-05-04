@@ -41,7 +41,7 @@
             display: inline-block;
             margin-top: 20px;
             transition: background-color 0.3s;
-            cursor: pointer; /* Добавляем курсор при наведении */
+            cursor: pointer;
         }
 
         button:hover {
@@ -51,37 +51,12 @@
 </head>
 <body>
     <div class="container">
-        <h1>Hello, {{user.first_name}} {{user.last_name}}!</h1>
+        <h1>Hello, {{user.first_name}} {{user.last_name}}!"</h1>
         <p>To confirm your identity, please click the button below:</p>
-        <button id="confirmButton">Confirm Identity</button>
+        <form action="http://localhost:8000/auth/verify" method="post">
+            <input type="hidden" name="token" value="{{token}}">
+            <button>Confirm Identity</button>
+        </form>
     </div>
-
-    <script>
-        document.getElementById('confirmButton').addEventListener('click', function() {
-            const data = {
-                token: '{{token}}'
-            };
-
-            fetch('http://localhost:8000/auth/verify', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Success:', data);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-        });
-    </script>
 </body>
 </html>

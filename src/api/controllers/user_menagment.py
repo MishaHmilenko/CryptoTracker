@@ -9,10 +9,8 @@ from starlette.requests import Request
 
 from src.api.controllers.utils_generate_template import generate_verify_template
 from src.api.fastapi_bg_tasks.user_tasks import send_verify_mail
-from src.api.stub import Stub
 from src.db.main import get_db_user
 from src.db.models.user import User
-from src.smtp.main import SmtpServer
 
 SECRET = 'SECRET'
 
