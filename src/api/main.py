@@ -17,13 +17,6 @@ from src.api.stub import Stub
 from src.db.main import get_db, initialize_beanie
 from src.smtp.main import SmtpServer
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-
-def factory_templates() -> Jinja2Templates:
-    return Jinja2Templates(directory="static/templates")
-
 
 def factory_smtp_server() -> SmtpServer:
     return SmtpServer()
@@ -51,22 +44,10 @@ def build_app() -> FastAPI:
 
     mongo = get_db()
 
-    app.mount("/static", StaticFiles(directory="static"), name="static")
-
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["*"],
-        allow_credentials=True,
-        allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        allow_headers=["*"],
-    )
-
     app.dependency_overrides.update({
         Stub(AsyncIOMotorDatabase): lambda: mongo.db,
         Stub(UserDAO): factory_user_dao,
         Stub(UserBusinessLogicService): factory_user_logic_service,
-        Stub(SmtpServer): factory_smtp_server,
-        Stub(Jinja2Templates): factory_templates
     })
 
     return app

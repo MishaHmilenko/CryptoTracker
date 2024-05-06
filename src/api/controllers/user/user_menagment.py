@@ -1,4 +1,5 @@
 import asyncio
+from typing import Annotated
 
 from beanie import PydanticObjectId
 from fastapi import Depends
@@ -6,9 +7,10 @@ from fastapi_users import BaseUserManager, FastAPIUsers
 from fastapi_users_db_beanie import ObjectIDIDMixin, BeanieUserDatabase
 from fastapi_users.authentication import BearerTransport, JWTStrategy, AuthenticationBackend
 from starlette.requests import Request
+from starlette.templating import Jinja2Templates
 
-from src.api.controllers.utils_generate_template import generate_verify_template
-from src.api.fastapi_bg_tasks.user_tasks import send_verify_mail
+from src.api.controllers.user.user_templates import generate_mail_template
+from src.smtp.send_mail import send_verify_mail
 from src.db.main import get_db_user
 from src.db.models.user import User
 
@@ -24,12 +26,12 @@ class UserManager(ObjectIDIDMixin, BaseUserManager[User, PydanticObjectId]):
         print(f'User {user.id} has registered.')
 
     async def on_after_request_verify(
-        self,
-        user: User,
-        token: str,
-        request: Request | None = None,
+            self,
+            user: User,
+            token: str,
+            request: Request | None = None,
     ) -> None:
-        htm_content = generate_verify_template(user, token, request)
+        htm_content = generate_mail_template(user, token, request)
         await asyncio.to_thread(lambda: send_verify_mail(user, htm_content))
 
 

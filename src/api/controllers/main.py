@@ -1,6 +1,6 @@
-from src.api.controllers.user_menagment import fastapi_users, auth_backend
+from src.api.controllers.user.user_menagment import fastapi_users, auth_backend
 from src.business_logic.user.dto import UserBaseDTO, UserCreateDTO, UserUpdateDTO
-from src.api.controllers.user_templates import router as user_templates_router
+from src.api.controllers.user.user_templates import router as user_templates_router
 
 
 def setup_controllers(app) -> None:

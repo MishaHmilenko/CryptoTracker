@@ -7,3 +7,5 @@ class SmtpServer:
     server.login(os.environ['SMTP_USER'], os.environ['SMTP_PASSWORD'])
 
 
+def get_smtp_server() -> SmtpServer:
+    return SmtpServer()

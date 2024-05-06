@@ -4,12 +4,13 @@ from email.mime.text import MIMEText
 from starlette.templating import Jinja2Templates
 
 from src.db.models.user import User
-from src.smtp.main import SmtpServer
+from src.smtp.main import SmtpServer, get_smtp_server
 
 
-def send_verify_mail(user: User, html_content: Jinja2Templates.TemplateResponse) -> None:
-    smtp = SmtpServer()
-
+def send_verify_mail(
+        user: User,
+        html_content: Jinja2Templates.TemplateResponse,
+        smtp: SmtpServer = get_smtp_server()) -> None:
     msg = MIMEMultipart()
     msg['From'] = 'admin@gmail.com'
     msg['To'] = user.email
