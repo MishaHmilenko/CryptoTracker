@@ -8,6 +8,7 @@ from fastapi import FastAPI, Depends
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from starlette.middleware.cors import CORSMiddleware
 from starlette.staticfiles import StaticFiles
+from starlette.templating import Jinja2Templates
 
 from src.api.controllers.main import setup_controllers
 from src.business_logic.user.main import UserBusinessLogicService
@@ -18,6 +19,10 @@ from src.smtp.main import SmtpServer
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+
+def factory_templates() -> Jinja2Templates:
+    return Jinja2Templates(directory="static/templates")
 
 
 def factory_smtp_server() -> SmtpServer:
@@ -60,7 +65,8 @@ def build_app() -> FastAPI:
         Stub(AsyncIOMotorDatabase): lambda: mongo.db,
         Stub(UserDAO): factory_user_dao,
         Stub(UserBusinessLogicService): factory_user_logic_service,
-        Stub(SmtpServer): factory_smtp_server
+        Stub(SmtpServer): factory_smtp_server,
+        Stub(Jinja2Templates): factory_templates
     })
 
     return app

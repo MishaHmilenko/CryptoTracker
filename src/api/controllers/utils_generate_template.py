@@ -8,7 +8,7 @@ def generate_verify_template(user: User, token: str, request: Request) -> Jinja2
     templates = Jinja2Templates(directory="static/templates")
     return templates.TemplateResponse(
         request=request,
-        name="verify.html",
+        name="mail.html",
         context={"user": user, "token": token}
     )
 

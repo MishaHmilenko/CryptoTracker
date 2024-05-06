@@ -5,30 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
             margin: 0;
             padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-        }
-
-        .container {
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            text-align: center;
-        }
-
-        h1 {
-            color: #333;
-        }
-
-        p {
-            color: #666;
+            background-color: #f0f0f0;
         }
 
         button {
@@ -39,7 +22,6 @@
             padding: 10px 20px;
             text-decoration: none;
             display: inline-block;
-            margin-top: 20px;
             transition: background-color 0.3s;
             cursor: pointer;
         }
@@ -50,13 +32,28 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Hello, {{user.first_name}} {{user.last_name}}!"</h1>
-        <p>To confirm your identity, please click the button below:</p>
-        <form action="http://localhost:8000/auth/verify" method="post">
-            <input type="hidden" name="token" value="{{token}}">
-            <button>Confirm Identity</button>
-        </form>
-    </div>
+    <button id="confirmButton">Confirm Identity</button>
+
+    <script>
+        document.getElementById('confirmButton').addEventListener('click', function() {
+            var token = "{{token}}";
+            fetch("http://localhost:8000/auth/verify", {
+                method: "POST",
+                headers:{
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({"token": token})
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                console.log("Identity confirmed successfully");
+            })
+            .catch(error => {
+                console.error("Error confirming identity:", error.message);
+            });
+        });
+    </script>
 </body>
 </html>
