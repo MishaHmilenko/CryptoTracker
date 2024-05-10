@@ -25,3 +25,12 @@ services:
       - .env
     volumes:
       - ./:/app
+
+  redis:
+    image: redis:latest
+    restart: on-failure
+    container_name: redis
+    env_file:
+      - .env
+    ports:
+      - "${REDIS_PORT}:6379"
