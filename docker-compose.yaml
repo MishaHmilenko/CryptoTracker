@@ -34,3 +34,27 @@ services:
       - .env
     ports:
       - "${REDIS_PORT}:6379"
+
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ['taskiq', 'worker', 'src.taskiq.main:broker']
+    container_name: worker
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+
+
+  scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ['taskiq', 'scheduler', 'src.taskiq.main:scheduler', '--skip-first-run']
+    container_name: scheduler
+    env_file:
+      - .env
+    volumes:
+      - .:/app

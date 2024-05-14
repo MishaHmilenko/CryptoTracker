@@ -1,12 +1,9 @@
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from typing import Annotated
 
-from fastapi.params import Depends
 from pydantic import BaseModel
 from starlette.templating import Jinja2Templates
 
-from src.api.stub import Stub
 from src.business_logic.user.main import UserBusinessLogicService
 from src.db.models.user import User
 from src.smtp.main import SmtpServer
@@ -53,12 +50,14 @@ def send_verify_mail(
 async def send_mail_with_greeting(
         smtp: SmtpServer, service: UserBusinessLogicService
 ) -> None:
+
     msg_data = MsgDataModel(
         from_email='admin@gmail.com',
         to_email=','.join(await service.get_emails()),
         subject='Greetings from Mongo App',
         text='Good morning!',
     )
+
     smtp.server.sendmail(
         from_addr='admin@gmail.com',
         to_addrs=await service.get_emails(),

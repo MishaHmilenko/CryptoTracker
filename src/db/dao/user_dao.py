@@ -21,3 +21,10 @@ class UserDAO:
             }
         ]
         return (await self.collection.aggregate(pipeline).to_list(length=None))[0]['emails']
+
+    async def add_new_field(self):
+        return await self.collection.update_one(
+            {'first_name': 'Misha'},
+            {'$set': {'new_field': 'new_value'}}
+        )
+

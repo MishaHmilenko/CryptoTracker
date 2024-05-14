@@ -8,3 +8,7 @@ class UserBusinessLogicService:
 
     async def get_emails(self) -> list[str]:
         return await self._dao.get_all_emails()
+
+
+    async def add_new_field(self):
+        return await self._dao.add_new_field()

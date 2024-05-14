@@ -1,17 +1,16 @@
-import logging
+from dishka import FromDishka
+from dishka.integrations.taskiq import inject
 
+from src.business_logic.user.main import UserBusinessLogicService
+from src.smtp.main import SmtpServer
 from src.smtp.send_mail import send_mail_with_greeting
 from src.taskiq.main import broker
 
 
-@broker.task
-async def best_task_ever():
-    print('Best task ever1111111111111111111111111')
-    logging.info('DO TASK')
-
-
-@broker.task
+@broker.task(schedule=[{'cron': '*/1 * * * *'}])
+@inject
 async def send_greeting_every_morning(
-    smtp='di', service='di'
+        smtp: FromDishka[SmtpServer], service: FromDishka[UserBusinessLogicService]
 ):
-    await send_mail_with_greeting(smtp, service)
+    # await send_mail_with_greeting(smtp, service)
+    ...
