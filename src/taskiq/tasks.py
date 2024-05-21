@@ -7,10 +7,7 @@ from src.smtp.send_mail import send_mail_with_greeting
 from src.taskiq.main import broker
 
 
-@broker.task(schedule=[{'cron': '*/1 * * * *'}])
+@broker.task(schedule=[{'cron': '0 9 * * *'}])
 @inject
-async def send_greeting_every_morning(
-        smtp: FromDishka[SmtpServer], service: FromDishka[UserBusinessLogicService]
-):
-    # await send_mail_with_greeting(smtp, service)
-    ...
+async def scheduler_task_for_greeting(smtp: FromDishka[SmtpServer], service: FromDishka[UserBusinessLogicService]):
+    await send_mail_with_greeting(smtp, service)

@@ -1,4 +1,10 @@
+from typing import Annotated
+
+from fastapi_users.db import BeanieUserDatabase
+from taskiq_dependencies import Depends
+
 from src.db.models.user import User
+
 
 
 class UserDAO:
@@ -21,10 +27,3 @@ class UserDAO:
             }
         ]
         return (await self.collection.aggregate(pipeline).to_list(length=None))[0]['emails']
-
-    async def add_new_field(self):
-        return await self.collection.update_one(
-            {'first_name': 'Misha'},
-            {'$set': {'new_field': 'new_value'}}
-        )
-

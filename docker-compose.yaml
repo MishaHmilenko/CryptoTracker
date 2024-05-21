@@ -40,7 +40,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: ['taskiq', 'worker', 'src.taskiq.main:broker']
+    command: ['taskiq', 'worker', 'src.taskiq.main:broker', '-fsd']
     container_name: worker
     env_file:
       - .env

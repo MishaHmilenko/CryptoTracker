@@ -1,21 +1,24 @@
-import taskiq_fastapi
+from dishka.integrations.taskiq import setup_dishka as setup_dishka_taskiq
 from taskiq import TaskiqScheduler
-from taskiq_redis import ListQueueBroker, RedisAsyncResultBackend, RedisScheduleSource
+from taskiq.schedule_sources import LabelScheduleSource
+from taskiq_redis import ListQueueBroker
 
-redis_async_result = RedisAsyncResultBackend(
-    redis_url='redis://redis:6379'
-)
+from src.dishka.container import container
+from src.db.main import get_db, initialize_beanie
 
-broker = ListQueueBroker(
+
+class CustomListQueueBroker(ListQueueBroker):
+    async def startup(self) -> None:
+        await super().startup()
+        await initialize_beanie(get_db().db)
+        setup_dishka_taskiq(container, broker)
+
+
+broker = CustomListQueueBroker(
     url='redis://redis:6379',
-    result_backend=redis_async_result
 )
-
-redis_source = RedisScheduleSource('redis://redis:6379')
 
 scheduler = TaskiqScheduler(
     broker=broker,
-    sources=[redis_source],
+    sources=[LabelScheduleSource(broker)]
 )
-
-taskiq_fastapi.init(broker, 'src.api.main:build_app')
