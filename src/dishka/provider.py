@@ -1,4 +1,4 @@
-from dishka import Provider, provide, Scope, FromDishka
+from dishka import Provider, provide, Scope
 
 from src.business_logic.user.main import UserBusinessLogicService
 from src.db.dao.user_dao import UserDAO
@@ -11,12 +11,20 @@ class DishkaProvider(Provider):
         return UserDAO()
 
     @provide(scope=Scope.APP)
-    def get_user_service(self, dao: FromDishka[UserDAO]) -> UserBusinessLogicService:
+    def get_user_service(self, dao: UserDAO) -> UserBusinessLogicService:
         return UserBusinessLogicService(dao=dao)
 
     @provide(scope=Scope.APP)
     def get_smtp(self) -> SmtpServer:
         return SmtpServer()
+
+    # @provide(scope=Scope.APP)
+    # def get_db_user(self) -> BeanieUserDatabase:
+    #     return BeanieUserDatabase(User)
+    #
+    # @provide(scope=Scope.APP)
+    # def get_user_manager(self, user_db: BeanieUserDatabase, smtp: SmtpServer) -> UserManager:
+    #     return UserManager(user_db, smtp)
 
 
 provider = DishkaProvider()

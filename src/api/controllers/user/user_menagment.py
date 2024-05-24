@@ -2,15 +2,13 @@ import asyncio
 
 from beanie import PydanticObjectId
 from fastapi import Depends
-from fastapi_users import BaseUserManager, FastAPIUsers, models
-from fastapi_users.db import BaseUserDatabase
+from fastapi_users import BaseUserManager, FastAPIUsers
 from fastapi_users_db_beanie import ObjectIDIDMixin, BeanieUserDatabase
 from fastapi_users.authentication import BearerTransport, JWTStrategy, AuthenticationBackend
 from starlette.requests import Request
 
 from src.api.controllers.user.user_templates import generate_mail_template
 
-from src.smtp.main import SmtpServer, get_smtp_server
 from src.smtp.send_mail import send_verify_mail
 from src.db.main import get_db_user
 from src.db.models.user import User
@@ -20,10 +18,6 @@ SECRET = 'SECRET'
 
 class UserManager(ObjectIDIDMixin, BaseUserManager[User, PydanticObjectId]):
     verification_token_secret = SECRET
-
-    def __init__(self, user_db, smtp: SmtpServer = get_smtp_server()):
-        super().__init__(user_db)
-        self.smtp = smtp
 
     async def on_after_register(
             self, user: User, request: Request | None = None
@@ -37,7 +31,7 @@ class UserManager(ObjectIDIDMixin, BaseUserManager[User, PydanticObjectId]):
             request: Request | None = None,
     ) -> None:
         htm_content = generate_mail_template(user, token, request)
-        await asyncio.to_thread(lambda: send_verify_mail(user, htm_content, self.smtp))
+        await asyncio.to_thread(lambda: send_verify_mail(user, htm_content, request.app.state.smtp))
 
 
 async def get_user_manager(user_db: BeanieUserDatabase = Depends(get_db_user)) -> UserManager:

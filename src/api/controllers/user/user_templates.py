@@ -1,11 +1,9 @@
-from dishka import FromDishka
-from dishka.integrations.fastapi import inject
 from fastapi import APIRouter
 from starlette.requests import Request
 from starlette.templating import Jinja2Templates
 
-from src.business_logic.user.main import UserBusinessLogicService
 from src.db.models.user import User
+
 
 router = APIRouter(prefix='/user-templates', tags=['user-templates'])
 templates = Jinja2Templates(directory="static/templates")

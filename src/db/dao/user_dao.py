@@ -1,10 +1,4 @@
-from typing import Annotated
-
-from fastapi_users.db import BeanieUserDatabase
-from taskiq_dependencies import Depends
-
 from src.db.models.user import User
-
 
 
 class UserDAO:
@@ -13,6 +7,11 @@ class UserDAO:
 
     async def get_all_emails(self) -> list[str]:
         pipeline = [
+            {
+                '$match': {
+                    'is_verified': True
+                }
+            },
             {
                 '$project': {
                     '_id': 0,
