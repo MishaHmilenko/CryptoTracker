@@ -22,17 +22,17 @@ class DBConfig:
 
 
 class MongoDB:
-    def __init__(self, config: DBConfig):
+    def __init__(self, config: DBConfig) -> None:
         self.client = AsyncIOMotorClient(config.url, uuidRepresentation='standard')
         self.db = self.client.get_default_database()
 
 
-async def initialize_beanie(db: AsyncIOMotorDatabase):
+async def initialize_beanie(db: AsyncIOMotorDatabase) -> None:
     await init_beanie(database=db, document_models=[User])
 
 
-def get_db():
-    return MongoDB(DBConfig())
+def get_db(config: DBConfig) -> MongoDB:
+    return MongoDB(config)
 
 
 async def get_db_user() -> BeanieUserDatabase:

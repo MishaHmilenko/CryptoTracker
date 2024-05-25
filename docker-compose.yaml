@@ -17,6 +17,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      target: build_app
     container_name: fastapi-app
     restart: on-failure
     ports:

@@ -4,13 +4,13 @@ from taskiq.schedule_sources import LabelScheduleSource
 from taskiq_redis import ListQueueBroker
 
 from src.dishka.container import container
-from src.db.main import get_db, initialize_beanie
+from src.db.main import get_db, initialize_beanie, DBConfig
 
 
 class CustomListQueueBroker(ListQueueBroker):
     async def startup(self) -> None:
         await super().startup()
-        await initialize_beanie(get_db().db)
+        await initialize_beanie(get_db(DBConfig()).db)
         setup_dishka_taskiq(container, broker)
 
 
