@@ -1,4 +1,5 @@
-FROM python:3.10-slim as build_app
+# Base stage
+FROM python:3.10-slim as base
 
 WORKDIR /app
 
@@ -8,15 +9,16 @@ RUN pip install poetry \
     && poetry config virtualenvs.create false \
     && poetry install
 
-
 COPY . /app
 
-EXPOSE 8000
+# Production stage
+FROM base as build_app
 
 CMD ["uvicorn", "src.api.main:build_app", "--reload", "--host", "0.0.0.0"]
 
-
-FROM build_app as test
+# Test stage
+FROM base as test
 
 RUN poetry install --with dev
 
+CMD ["uvicorn", "tests.conftest:build_test_app", "--reload", "--host", "0.0.0.0"]
