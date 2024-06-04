@@ -21,4 +21,4 @@ FROM base as test
 
 RUN poetry install --with dev
 
-CMD ["uvicorn", "tests.conftest:build_test_app", "--reload", "--host", "0.0.0.0"]
+CMD ["pytest"]

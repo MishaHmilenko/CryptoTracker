@@ -35,6 +35,8 @@ async def initialize_beanie(db: AsyncIOMotorDatabase) -> None:
 
 
 def get_db(config) -> MongoDB:
+    # params: config type DBConfig OR TestDBConfig
+
     return MongoDB(config)
 
 
