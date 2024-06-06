@@ -8,4 +8,3 @@ class User(BeanieBaseUser, Document):
     first_name: str
     last_name: str
     birth_date: datetime.date
-
