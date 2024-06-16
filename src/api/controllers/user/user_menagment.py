@@ -5,6 +5,7 @@ from fastapi import Depends
 from fastapi_users import BaseUserManager, FastAPIUsers
 from fastapi_users_db_beanie import ObjectIDIDMixin, BeanieUserDatabase
 from fastapi_users.authentication import BearerTransport, JWTStrategy, AuthenticationBackend
+from httpx_oauth.clients.google import GoogleOAuth2
 from starlette.requests import Request
 
 from src.api.controllers.user.user_templates import generate_mail_template
@@ -51,6 +52,18 @@ auth_backend = AuthenticationBackend(
     get_strategy=get_jwt_strategy
 )
 
+google_oauth_client = GoogleOAuth2(
+    'Client ID', 'Client Secret'
+)
+
 fastapi_users = FastAPIUsers[User, PydanticObjectId](get_user_manager, [auth_backend])
 
 current_active_user = fastapi_users.current_user(active=True)
+
+
+class CurrentUser:
+    def __init__(self):
+        self.user = fastapi_users.current_user(active=True)
+
+    async def __call__(self):
+        return await self.user()

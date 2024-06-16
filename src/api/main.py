@@ -6,6 +6,7 @@ from fastapi import FastAPI
 
 from src.api.controllers.main import setup_controllers
 from src.db.main import get_db, initialize_beanie, DBConfig
+from src.db.models.coin import Coin
 from src.dishka.container import container
 from src.smtp.main import get_smtp_server
 from src.taskiq.main import broker

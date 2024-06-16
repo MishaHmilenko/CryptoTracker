@@ -1,7 +1,7 @@
 from dishka import FromDishka
 from dishka.integrations.taskiq import inject
 
-from src.business_logic.user.main import UserBusinessLogicService
+from src.business_logic.user.logic import UserBusinessLogicService
 from src.smtp.main import SmtpServer
 from src.smtp.send_mail import send_mail_with_greeting
 from src.taskiq.main import broker

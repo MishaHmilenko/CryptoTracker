@@ -1,6 +1,6 @@
 from starlette.templating import Jinja2Templates
 
-from src.business_logic.user.main import UserBusinessLogicService
+from src.business_logic.user.logic import UserBusinessLogicService
 from src.db.models.user import User
 from src.smtp.main import SmtpServer
 from src.smtp.models import MsgDataModel

@@ -5,6 +5,9 @@ from beanie import init_beanie
 from fastapi_users.db import BeanieUserDatabase
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 
+from src.db.models.coin import Coin
+from src.db.models.price_log import PriceLog
+from src.db.models.tracking_crypto import TrackedCrypto
 from src.db.models.user import User
 
 
@@ -29,9 +32,7 @@ class MongoDB:
 
 
 async def initialize_beanie(db: AsyncIOMotorDatabase) -> None:
-    print('start initialize_beanie func', db.name)
-    await init_beanie(database=db, document_models=[User])
-    print('finish initialize_beanie func')
+    await init_beanie(database=db, document_models=[User, Coin, PriceLog, TrackedCrypto])
 
 
 def get_db(config) -> MongoDB:
