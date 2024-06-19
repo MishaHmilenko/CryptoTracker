@@ -7,7 +7,7 @@ class CoinDAO:
     def __init__(self):
         self.collection = Coin
 
-    async def add_coin(self, coin_data: CoinCreate) -> None:
+    async def add_coin(self, coin_data: CoinCreate) -> Coin:
 
         coin = Coin(
             name=coin_data.name,
@@ -16,6 +16,8 @@ class CoinDAO:
         )
 
         await self.collection.insert_one(coin)
+
+        return coin
 
     async def get_coin_by_slug(self, slug: str) -> Coin:
         return await self.collection.find_one({"slug": slug})

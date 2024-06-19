@@ -1,6 +1,5 @@
 from dishka import Provider, provide, Scope
 
-from src.api.controllers.user.user_menagment import CurrentUser
 from src.business_logic.coin.logic import CoinBusinessLogicService
 from src.business_logic.user.logic import UserBusinessLogicService
 from src.crypto_api.main import CryptoApiService
@@ -48,10 +47,6 @@ class DishkaProvider(Provider):
     @provide(scope=Scope.APP)
     def get_smtp(self) -> SmtpServer:
         return SmtpServer()
-
-    @provide(scope=Scope.APP)
-    def get_current_user(self) -> CurrentUser:
-        return CurrentUser()
 
 
 provider = DishkaProvider()
