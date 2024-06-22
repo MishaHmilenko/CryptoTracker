@@ -52,3 +52,21 @@ class CoinBusinessLogicService:
 
         coin = await self.create_coin(coin_api_data)
         await self.create_tracking(coin, user)
+
+    async def stop_tracking(self, tracking_coin_data: TrackingCoin, user: User) -> None:
+
+        coin_in_db = await self._coin_dao.get_coin_by_slug(tracking_coin_data.slug)
+        print('Coin ib db', coin_in_db)
+
+        if coin_in_db is None:
+            raise CoinNotFound()
+
+        track_in_db = await self._tracked_dao.get_tracking_by_coin(coin_in_db)
+
+        if track_in_db is None:
+            raise TrackingNotFound()
+
+        if user not in self._tracked_dao.get_users_of_tracking_coin(coin_in_db):
+            raise UserNotTrackCoin()
+
+        await self._tracked_dao.remove_user_of_tracking_coin(coin_in_db, user)

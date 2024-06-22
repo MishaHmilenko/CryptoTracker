@@ -24,6 +24,11 @@ class CryptoTrackingDAO:
 
         await self.collection.save(track_coin)
 
+    async def remove_user_of_tracking_coin(self, coin: Coin, user: User) -> None:
+        track_coin = await self.collection.find_one(self.collection.crypto.id == coin.id, fetch_links=True)
+        track_coin.users.remove(user)
+
+        await self.collection.save(track_coin)
+
     async def get_tracking_by_coin(self, coin: CoinCreate) -> TrackedCrypto:
         return await self.collection.find_one(self.collection.crypto.slug == coin.slug, fetch_links=True)
-

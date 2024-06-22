@@ -19,3 +19,13 @@ async def start_tracking(
         user: User = Depends(current_active_user),
 ):
     await service.add_tracking(coin_data, user)
+
+
+@router.post('/stop-tracking')
+@inject
+async def stop_tracking(
+        coin_data: TrackingCoin,
+        service: FromDishka[CoinBusinessLogicService],
+        user: User = Depends(current_active_user)
+):
+    await service.stop_tracking(coin_data, user)
