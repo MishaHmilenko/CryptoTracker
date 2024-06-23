@@ -2,7 +2,6 @@ from src.db.models.coin import Coin
 from src.db.models.tracking_crypto import TrackedCrypto
 from src.db.models.user import User
 
-from src.business_logic.coin.dto import CoinCreate
 
 class CryptoTrackingDAO:
 
@@ -30,5 +29,5 @@ class CryptoTrackingDAO:
 
         await self.collection.save(track_coin)
 
-    async def get_tracking_by_coin(self, coin: CoinCreate) -> TrackedCrypto:
-        return await self.collection.find_one(self.collection.crypto.slug == coin.slug, fetch_links=True)
+    async def get_tracking_by_coin_slug(self, tracking_coin_slug: str) -> TrackedCrypto:
+        return await self.collection.find_one(self.collection.crypto.slug == tracking_coin_slug, fetch_links=True)
