@@ -35,12 +35,14 @@ class DishkaProvider(Provider):
             self,
             coin_dao: CoinDAO,
             tracked_dao: CryptoTrackingDAO,
+            user_dao: UserDAO,
             crypto_api_service: CryptoApiService
     ) -> CoinBusinessLogicService:
 
         return CoinBusinessLogicService(
             coin_dao=coin_dao,
             tracked_dao=tracked_dao,
+            user_dao=user_dao,
             crypto_api_service=crypto_api_service
         )
 

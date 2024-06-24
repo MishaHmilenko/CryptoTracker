@@ -3,8 +3,8 @@ import os
 
 import requests
 
-from src.business_logic.coin.dto import CoinCreate
-from src.business_logic.coin.exceptions import CoinNotFound
+from src.business_logic.coin.dto import CoinCreateDTO
+from src.business_logic.coin.exceptions import CoinNotFoundInAPI
 
 
 class CryptoApiService:
@@ -21,11 +21,11 @@ class CryptoApiService:
             response = requests.get(url, headers=headers, params=params)
             response.raise_for_status()
         except requests.RequestException:
-            raise CoinNotFound
+            raise CoinNotFoundInAPI()
 
         return response
 
-    async def get_coin_by_slug(self, slug) -> CoinCreate:
+    async def get_coin_by_slug(self, slug) -> CoinCreateDTO:
         params = {'slug': slug}
 
         response = self._make_request(url=self.base_info_url, headers=self.headers, params=params)
@@ -34,7 +34,7 @@ class CryptoApiService:
 
         coin_info = data['data'][next(iter(data['data']))]
 
-        return CoinCreate(
+        return CoinCreateDTO(
             name=coin_info['name'],
             symbol=coin_info['symbol'],
             slug=coin_info['slug'],

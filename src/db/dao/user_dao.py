@@ -5,6 +5,9 @@ class UserDAO:
     def __init__(self):
         self.collection = User
 
+    async def get_user_by_id(self, user_id) -> User:
+        return await self.collection.find_one({"_id": user_id})
+
     async def get_all_emails(self) -> list[str]:
         pipeline = [
             {

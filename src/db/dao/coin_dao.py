@@ -1,4 +1,6 @@
-from src.business_logic.coin.dto import CoinCreate
+from bson import ObjectId
+
+from src.business_logic.coin.dto import CoinCreateDTO
 from src.db.models.coin import Coin
 
 
@@ -7,7 +9,10 @@ class CoinDAO:
     def __init__(self):
         self.collection = Coin
 
-    async def add_coin(self, coin_data: CoinCreate) -> Coin:
+    async def get_coin_by_id(self, coin_id: ObjectId) -> Coin:
+        return await self.collection.find_one({"_id": coin_id})
+
+    async def add_coin(self, coin_data: CoinCreateDTO) -> Coin:
 
         coin = Coin(
             name=coin_data.name,
