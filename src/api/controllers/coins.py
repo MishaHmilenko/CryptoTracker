@@ -6,6 +6,7 @@ from fastapi.params import Depends
 from src.api.controllers.user.user_menagment import current_active_user
 from src.business_logic.coin.dto import TrackingCoinDTO
 from src.business_logic.coin.logic import CoinBusinessLogicService
+from src.business_logic.user.dto import UserBaseDTO
 from src.db.models.user import User
 
 router = APIRouter(prefix='/coins', tags=['Coins'])
@@ -18,7 +19,7 @@ async def start_tracking(
         service: FromDishka[CoinBusinessLogicService],
         user: User = Depends(current_active_user),
 ):
-    await service.add_tracking(coin_data, user)
+    await service.add_tracking(coin_data, UserBaseDTO.from_orm(user))
 
 
 @router.post('/stop-tracking')
@@ -28,4 +29,4 @@ async def stop_tracking(
         service: FromDishka[CoinBusinessLogicService],
         user: User = Depends(current_active_user)
 ):
-    await service.stop_tracking(coin_data, user)
+    await service.stop_tracking(coin_data, UserBaseDTO.from_orm(user))

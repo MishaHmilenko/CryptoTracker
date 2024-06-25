@@ -14,13 +14,13 @@ class CoinBusinessLogicService:
     def __init__(
             self,
             coin_dao: CoinDAO,
-            tracked_dao: CryptoTrackingDAO,
+            tracking_dao: CryptoTrackingDAO,
             user_dao: UserDAO,
             crypto_api_service: CryptoApiService
     ) -> None:
 
         self._coin_dao = coin_dao
-        self._tracked_dao = tracked_dao
+        self._tracking_dao = tracking_dao
         self._user_dao = user_dao
         self.crypto_api_service = crypto_api_service
 
@@ -54,7 +54,7 @@ class CoinBusinessLogicService:
 
     async def get_tracking_by_coin_data(self, coin_data: CoinBaseDTO) -> TrackingCoinDTO:
 
-        tracking = await self._tracked_dao.get_tracking_by_coin_slug(coin_data.slug)
+        tracking = await self._tracking_dao.get_tracking_by_coin_slug(coin_data.slug)
 
         if tracking is None:
             raise TrackingNotFound()
@@ -68,14 +68,14 @@ class CoinBusinessLogicService:
         user_in_db = await self._user_dao.get_user_by_id(user.id)
         coin_in_db = await self._coin_dao.get_coin_by_id(coin_data.id)
 
-        if user_in_db not in await self._tracked_dao.get_users_of_tracking_coin(coin_in_db):
+        if user_in_db not in await self._tracking_dao.get_users_of_tracking_coin(coin_in_db):
             raise UserNotTrackCoin()
 
         return True
 
     async def create_tracking(self, coin_data: CoinBaseDTO, user: UserBaseDTO) -> None:
 
-        await self._tracked_dao.add_coin_to_tracking(
+        await self._tracking_dao.add_coin_to_tracking(
             await self._coin_dao.get_coin_by_id(coin_data.id),
             await self._user_dao.get_user_by_id(user.id)
         )
@@ -85,10 +85,10 @@ class CoinBusinessLogicService:
         user_in_db = await self._user_dao.get_user_by_id(user.id)
         coin = await self._coin_dao.get_coin_by_id(coin_data.id)
 
-        if user_in_db in await self._tracked_dao.get_users_of_tracking_coin(coin):
+        if user_in_db in await self._tracking_dao.get_users_of_tracking_coin(coin):
             raise UserAlreadyTracksCoin()
 
-        await self._tracked_dao.add_user_to_tracking_coin(coin, await self._user_dao.get_user_by_id(user.id))
+        await self._tracking_dao.add_user_to_tracking_coin(coin, user_in_db)
 
     async def add_tracking(self, tracking_coin_data: TrackingCoinDTO, user: UserBaseDTO) -> None:
 
@@ -96,7 +96,7 @@ class CoinBusinessLogicService:
 
             coin_in_db = await self.get_coin_by_tracking_coin_data(tracking_coin_data)
 
-            if await self._tracked_dao.get_tracking_by_coin_slug(coin_in_db.slug):
+            if await self._tracking_dao.get_tracking_by_coin_slug(coin_in_db.slug):
                 return await self.add_user_to_tracking(coin_in_db, user)
             else:
                 return await self.create_tracking(coin_in_db, user)
@@ -116,14 +116,10 @@ class CoinBusinessLogicService:
 
             await self.check_user_tracked_coin(user, coin_data)
 
-            await self._tracked_dao.remove_user_of_tracking_coin(await self._coin_dao.get_coin_by_id(coin_data.id),
-                                                                 await self._user_dao.get_user_by_id(user.id))
+            await self._tracking_dao.remove_user_of_tracking_coin(
+                await self._coin_dao.get_coin_by_id(coin_data.id),
+                await self._user_dao.get_user_by_id(user.id)
+            )
 
-        except CoinNotFound:
-            raise CoinNotFound()
-
-        except TrackingNotFound:
-            raise TrackingNotFound()
-
-        except UserNotTrackCoin:
-            raise UserNotTrackCoin()
+        except (CoinNotFound, TrackingNotFound, UserNotTrackCoin):
+            raise

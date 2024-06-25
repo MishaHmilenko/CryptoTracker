@@ -12,6 +12,9 @@ class CoinDAO:
     async def get_coin_by_id(self, coin_id: ObjectId) -> Coin:
         return await self.collection.find_one({"_id": coin_id})
 
+    async def get_coin_by_slug(self, slug: str) -> Coin:
+        return await self.collection.find_one({"slug": slug})
+
     async def add_coin(self, coin_data: CoinCreateDTO) -> Coin:
 
         coin = Coin(
@@ -23,6 +26,3 @@ class CoinDAO:
         await self.collection.insert_one(coin)
 
         return coin
-
-    async def get_coin_by_slug(self, slug: str) -> Coin:
-        return await self.collection.find_one({"slug": slug})

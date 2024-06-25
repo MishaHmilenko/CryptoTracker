@@ -34,14 +34,14 @@ class DishkaProvider(Provider):
     async def get_coin_service(
             self,
             coin_dao: CoinDAO,
-            tracked_dao: CryptoTrackingDAO,
+            tracking_dao: CryptoTrackingDAO,
             user_dao: UserDAO,
             crypto_api_service: CryptoApiService
     ) -> CoinBusinessLogicService:
 
         return CoinBusinessLogicService(
             coin_dao=coin_dao,
-            tracked_dao=tracked_dao,
+            tracking_dao=tracking_dao,
             user_dao=user_dao,
             crypto_api_service=crypto_api_service
         )
