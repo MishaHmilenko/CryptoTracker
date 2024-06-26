@@ -51,9 +51,24 @@ async def login_data() -> dict:
         }
 
 
+@pytest_asyncio.fixture(scope='function')
+async def user_auth_token_data(
+        client: AsyncClient,
+        registered_user: User,
+        login_data: dict
+) -> dict:
+
+    response = await client.post(
+        'auth/jwt/login',
+        data=login_data
+    )
+
+    return response.json()
+
+
 @pytest.fixture(scope='function')
-def created_user() -> FindOne[User]:
-    return User.find_one(User.email == 'user@example.com')
+async def created_user() -> User:
+    return await User.find_one(User.email == 'user@example.com')
 
 
 @pytest_asyncio.fixture(scope='function')
@@ -85,3 +100,8 @@ async def request_verify_data(token_verify: str):
     return {
         'token': token_verify
     }
+
+
+@pytest_asyncio.fixture(scope='function')
+async def current_user(registered_user: User) -> User:
+    return await User.find_one(User.id == registered_user.id)

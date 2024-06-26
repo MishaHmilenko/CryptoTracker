@@ -6,6 +6,10 @@ from src.db.main import initialize_beanie, get_db
 
 from src.api.controllers.main import setup_controllers
 
+from src.dishka.container import container
+from dishka.integrations.fastapi import setup_dishka as setup_dishka_fastapi
+
+
 
 @dataclass
 class TestDBConfig:
@@ -17,8 +21,7 @@ class TestDBConfig:
 
     @property
     def url(self):
-        print('TEST database', self.database)
-        print('TEST PORT', self.port)
+
         return f'mongodb://{self.user}:{self.password}@{self.host}:{self.port}/{self.database}?authSource=admin'
 
 
@@ -27,6 +30,7 @@ async def build_test_app() -> FastAPI:
     app = FastAPI(title='FastAPI Test App')
 
     setup_controllers(app)
+    setup_dishka_fastapi(container, app)
 
     mongo = get_db(TestDBConfig())
 

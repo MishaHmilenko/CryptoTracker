@@ -14,3 +14,6 @@ async def client() -> AsyncGenerator[AsyncClient, Any]:
         yield client
 
     app.state.mongo.db.User.delete_many({})
+    app.state.mongo.db.Coin.delete_many({})
+    app.state.mongo.db.TrackedCrypto.delete_many({})
+
