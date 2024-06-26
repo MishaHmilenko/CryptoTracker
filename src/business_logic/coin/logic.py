@@ -96,7 +96,7 @@ class CoinBusinessLogicService:
 
             coin_in_db = await self.get_coin_by_tracking_coin_data(tracking_coin_data)
 
-            if await self._tracking_dao.get_tracking_by_coin_slug(coin_in_db.slug):
+            if await self.get_tracking_by_coin_data(coin_in_db):
                 return await self.add_user_to_tracking(coin_in_db, user)
             else:
                 return await self.create_tracking(coin_in_db, user)

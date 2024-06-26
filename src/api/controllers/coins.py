@@ -15,18 +15,18 @@ router = APIRouter(prefix='/coins', tags=['Coins'])
 @router.post('/start-tracking')
 @inject
 async def start_tracking(
-        coin_data: TrackingCoinDTO,
+        tracking_coin_data: TrackingCoinDTO,
         service: FromDishka[CoinBusinessLogicService],
         user: User = Depends(current_active_user),
 ):
-    await service.add_tracking(coin_data, UserBaseDTO.from_orm(user))
+    await service.add_tracking(tracking_coin_data, UserBaseDTO.from_orm(user))
 
 
 @router.post('/stop-tracking')
 @inject
 async def stop_tracking(
-        coin_data: TrackingCoinDTO,
+        tracking_coin_data: TrackingCoinDTO,
         service: FromDishka[CoinBusinessLogicService],
         user: User = Depends(current_active_user)
 ):
-    await service.stop_tracking(coin_data, UserBaseDTO.from_orm(user))
+    await service.stop_tracking(tracking_coin_data, UserBaseDTO.from_orm(user))
