@@ -1,43 +1,49 @@
-import json
-
+import asyncio
 import websockets
+
+from src.business_logic.coin.logic import CoinBusinessLogicService
 
 
 class BinanceWebsocket:
 
-    def __init__(self, crypto_trade_streams):
-
-        self.crypro_trade_streams = crypto_trade_streams
+    def __init__(self, coin_logic_service: CoinBusinessLogicService):
         self.base_url = 'wss://fstream.binance.com/stream'
 
-        self.websocket = None
-        self.running = True
+        self.connection_to_trade_streams = None
 
-    async def connect_to_trade_websocket(self):
-        uri = f'{self.base_url}?streams={self.crypro_trade_streams}'
+        self.coin_logic_service = coin_logic_service
 
-        async with websockets.connect(uri) as websocket:
-            self.websocket = websocket
+    async def connect_to_trade_streams(self, crypto_trade_streams: str):
+        self.connection_to_trade_streams = await websockets.connect(crypto_trade_streams)
 
-            await self.handle_messages()
+    async def disconnect_from_trade_streams(self):
+        if self.connection_to_trade_streams:
+            await self.connection_to_trade_streams.close()
 
-    async def handle_messages(self):
+    async def receive_message(self):
+        if self.connection_to_trade_streams:
+            return await self.connection_to_trade_streams.recv()
 
-        while self.running:
-            try:
-                message = await self.websocket.recv()
-                print('Message of socket', json.loads(message))
-            except websockets.ConnectionClosed:
-                print('Connection closed')
-                break
+    async def listen_trade_streams(self):
+        print('Coin Logic Service', self.coin_logic_service)
 
-    async def stop_connection(self):
-        self.running = False
+        uri = f'{self.base_url}?streams='
 
-        if self.websocket:
-            await self.websocket.close()
-            print('Websocket closed')
+        try:
+            await self.connect_to_trade_streams(uri)
+
+            while True:
+                message = await self.receive_message()
+                print(message)
+
+        except websockets.ConnectionClosed:
+            pass
+
+        finally:
+            await self.disconnect_from_trade_streams()
 
 
-async def get_binance_websocket():
-    return BinanceWebsocket('btcusdt@aggTrade/ethusdt@aggTrade')
+if __name__ == '__main__':
+    ws = BinanceWebsocket()
+    asyncio.run(ws.listen_trade_streams())
+

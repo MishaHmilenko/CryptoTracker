@@ -15,6 +15,9 @@ class CoinDAO:
     async def get_coin_by_slug(self, slug: str) -> Coin:
         return await self.collection.find_one({"slug": slug})
 
+    async def get_all_coins(self) -> list[Coin]:
+        return await self.collection.find().to_list()
+
     async def add_coin(self, coin_data: CoinCreateDTO) -> Coin:
 
         coin = Coin(
