@@ -1,3 +1,4 @@
+from multiprocessing import Process
 from contextlib import asynccontextmanager
 
 from dishka.integrations.fastapi import setup_dishka as setup_dishka_fastapi
@@ -9,6 +10,7 @@ from src.db.main import get_db, initialize_beanie, DBConfig
 from src.dishka.container import container
 from src.smtp.main import get_smtp_server
 from src.taskiq.main import broker
+from src.crypto_api.binance_websocket import run_binance_websocket
 
 
 @asynccontextmanager
@@ -19,6 +21,10 @@ async def lifespan(app: FastAPI):
     await broker.startup()
 
     app.state.smtp = get_smtp_server()
+
+    ws_process = Process(target=run_binance_websocket)
+    ws_process.start()
+    ws_process.join()
 
     yield
 

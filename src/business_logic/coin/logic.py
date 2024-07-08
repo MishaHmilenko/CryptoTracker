@@ -123,6 +123,3 @@ class CoinBusinessLogicService:
 
         except (CoinNotFound, TrackingNotFound, UserNotTrackCoin):
             raise
-
-    async def format_coins_to_params_of_websocket(self):
-        ...
