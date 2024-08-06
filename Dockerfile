@@ -1,5 +1,5 @@
 # Base stage
-FROM python:3.10-slim as base
+FROM python:3.11-slim as base
 
 WORKDIR /app
 
@@ -19,6 +19,6 @@ CMD ["uvicorn", "src.api.main:build_app", "--reload", "--host", "0.0.0.0"]
 # Test stage
 FROM base as test
 
-RUN poetry install --with dev
+RUN poetry install --with test
 
 CMD ["pytest"]

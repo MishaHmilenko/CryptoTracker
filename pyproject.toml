@@ -2,11 +2,11 @@
 name = "crud-mongo"
 version = "0.1.0"
 description = ""
-authors = ["Misha <290819allo@gmail.com>"]
+authors = ["Misha <mi.khmilenko@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.11"
 fastapi = {extras = ["all"], version = "^0.110.2"}
 motor = "^3.4.0"
 fastapi-users = {extras = ["beanie"], version = "^13.0.0"}
@@ -18,7 +18,7 @@ dishka = "^1.1.1"
 streamlit = "^1.36.0"
 
 
-[tool.poetry.group.dev.dependencies]
+[tool.poetry.group.test.dependencies]
 pytest = "^8.2.1"
 pytest-asyncio = "^0.23.7"
 httpx = "^0.27.0"

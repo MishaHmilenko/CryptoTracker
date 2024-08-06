@@ -1,8 +1,10 @@
 services:
   db:
-    image: mongo
+    build:
+      context: .
+      dockerfile: Dockerfile-mongodb
     container_name: mongodb
-    hostname: mongo
+    hostname: "${MONGO_HOST}"
     restart: on-failure
     env_file:
       - .env
@@ -27,6 +29,7 @@ services:
     volumes:
       - ./:/app
 
+
   redis:
     image: redis:latest
     restart: on-failure
@@ -35,7 +38,6 @@ services:
       - .env
     ports:
       - "${REDIS_PORT}:6379"
-
 
   worker:
     build:
@@ -47,7 +49,6 @@ services:
       - .env
     volumes:
       - .:/app
-
 
   scheduler:
     build:

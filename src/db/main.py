@@ -1,7 +1,10 @@
 import os
+import dns
+import logging
+import asyncio
 from dataclasses import dataclass
 
-from beanie import init_beanie
+from beanie import init_beanie, Document
 from fastapi_users.db import BeanieUserDatabase
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 
@@ -9,6 +12,11 @@ from src.db.models.coin import Coin
 from src.db.models.price_log import PriceLog
 from src.db.models.tracking_crypto import TrackedCrypto
 from src.db.models.user import User
+
+from src.db.dao.coin_dao import CoinDAO
+from pymongo.errors import PyMongoError
+from src.crypto_api.binance_websocket import start_listen_trade_streams
+
 
 
 @dataclass
@@ -18,10 +26,11 @@ class DBConfig:
     host = os.environ['MONGO_HOST']
     port = os.environ['MONGO_PORT']
     database = os.environ['MONGO_DB']
+    replset = os.environ['MONGO_RS']
 
     @property
     def url(self):
-        return f'mongodb://{self.user}:{self.password}@{self.host}:{self.port}/{self.database}?authSource=admin'
+        return f'mongodb://{self.user}:{self.password}@{self.host}:{self.port}/{self.database}?authSource=admin&replicaSet={self.replset}&w=majority'
 
 
 class MongoDB:
@@ -43,3 +52,30 @@ def get_db(config) -> MongoDB:
 
 async def get_db_user() -> BeanieUserDatabase:
     yield BeanieUserDatabase(User)
+
+
+async def watch_changes_in_coin_collection(db: AsyncIOMotorDatabase):
+
+    pipeline = [{'$match': {}}]
+    collection = db['Coin']
+
+    async with collection.watch(pipeline=pipeline) as change_stream:
+        while change_stream.alive:
+            change = await change_stream.try_next()
+
+            if change is not None:
+                print('Change doc: ', change_stream.resume_token, flush=True)
+                await start_listen_trade_streams()
+                continue
+
+            await asyncio.sleep(5)
+
+
+def run_second_process():
+    mongo = get_db(DBConfig())
+
+    event_loop = asyncio.get_event_loop()
+
+    event_loop.run_until_complete(initialize_beanie(mongo.db))
+
+    event_loop.run_until_complete(watch_changes_in_coin_collection(db=mongo.db))
