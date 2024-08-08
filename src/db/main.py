@@ -49,7 +49,7 @@ async def get_db_user() -> BeanieUserDatabase:
     yield BeanieUserDatabase(User)
 
 
-async def watch_changes_in_coin_collection(db: AsyncIOMotorDatabase):
+async def watch_changes_in_coin_collection(db: AsyncIOMotorDatabase) -> None:
 
     pipeline = [{'$match': {}}]
     collection = db['Coin']
@@ -66,11 +66,18 @@ async def watch_changes_in_coin_collection(db: AsyncIOMotorDatabase):
             await asyncio.sleep(5)
 
 
+async def is_coin_collection_empty(db: AsyncIOMotorDatabase) -> bool:
+    return True if await db['Coin'].count_documents(filter={}) == 0 else False
+
+
 def run_second_process():
     mongo = get_db(DBConfig())
 
     event_loop = asyncio.get_event_loop()
 
     event_loop.run_until_complete(initialize_beanie(mongo.db))
+
+    if not event_loop.run_until_complete(is_coin_collection_empty(mongo.db)):
+        event_loop.create_task(start_listen_trade_streams())
 
     event_loop.run_until_complete(watch_changes_in_coin_collection(db=mongo.db))

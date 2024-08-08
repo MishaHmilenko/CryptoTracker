@@ -56,6 +56,3 @@ class CryptoWebsocket:
 async def start_listen_trade_streams():
     ws = CryptoWebsocket(CoinDAO())
     await ws.listen_trade_streams()
-
-
-
