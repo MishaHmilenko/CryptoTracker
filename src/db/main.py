@@ -1,10 +1,8 @@
 import os
-import dns
-import logging
 import asyncio
 from dataclasses import dataclass
 
-from beanie import init_beanie, Document
+from beanie import init_beanie
 from fastapi_users.db import BeanieUserDatabase
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 
@@ -13,10 +11,7 @@ from src.db.models.price_log import PriceLog
 from src.db.models.tracking_crypto import TrackedCrypto
 from src.db.models.user import User
 
-from src.db.dao.coin_dao import CoinDAO
-from pymongo.errors import PyMongoError
 from src.crypto_api.binance_websocket import start_listen_trade_streams
-
 
 
 @dataclass
@@ -62,10 +57,10 @@ async def watch_changes_in_coin_collection(db: AsyncIOMotorDatabase):
     async with collection.watch(pipeline=pipeline) as change_stream:
         while change_stream.alive:
             change = await change_stream.try_next()
+            print(123, flush=True)
 
             if change is not None:
-                print('Change doc: ', change_stream.resume_token, flush=True)
-                await start_listen_trade_streams()
+                asyncio.create_task(start_listen_trade_streams())
                 continue
 
             await asyncio.sleep(5)
