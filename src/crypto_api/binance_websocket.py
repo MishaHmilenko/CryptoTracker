@@ -1,10 +1,6 @@
-import asyncio
 import websockets
-import streamlit
-import logging
 
 from src.db.dao.coin_dao import CoinDAO
-# from src.db.main import get_db, DBConfig, initialize_beanie
 
 
 class CryptoWebsocket:
@@ -16,8 +12,8 @@ class CryptoWebsocket:
 
         self._coin_dao = coin_dao
 
-    async def connect_to_trade_streams(self, crypto_trade_streams: str):
-        self.connection_to_trade_streams = await websockets.connect(crypto_trade_streams)
+    async def connect_to_trade_streams(self, crypto_trade_streams_uri: str):
+        self.connection_to_trade_streams = await websockets.connect(crypto_trade_streams_uri)
 
     async def disconnect_from_trade_streams(self):
         if self.connection_to_trade_streams:
@@ -44,7 +40,6 @@ class CryptoWebsocket:
 
             while True:
                 message = await self.receive_message()
-                print(message)
 
         except websockets.ConnectionClosed:
             pass
