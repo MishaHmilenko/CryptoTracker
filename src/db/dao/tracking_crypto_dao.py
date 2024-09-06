@@ -31,3 +31,8 @@ class CryptoTrackingDAO:
 
     async def get_tracking_by_coin_slug(self, tracking_coin_slug: str) -> TrackedCrypto:
         return await self.collection.find_one(self.collection.crypto.slug == tracking_coin_slug, fetch_links=True)
+
+    async def get_coins_witch_users_track(self) -> list[Coin]:
+        crypto_tracking_objs = await self.collection.find(self.collection.users != [], fetch_links=True).to_list()
+        return [crypto_tracking.crypto for crypto_tracking in crypto_tracking_objs]
+

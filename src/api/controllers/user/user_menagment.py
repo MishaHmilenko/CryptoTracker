@@ -19,11 +19,6 @@ SECRET = 'SECRET'
 class UserManager(ObjectIDIDMixin, BaseUserManager[User, PydanticObjectId]):
     verification_token_secret = SECRET
 
-    async def on_after_register(
-            self, user: User, request: Request | None = None
-    ) -> None:
-        print(f'User {user.id} has registered.')
-
     async def on_after_request_verify(
             self,
             user: User,

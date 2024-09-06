@@ -2,14 +2,15 @@ import asyncio
 
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
-from src.crypto_api.binance_websocket import start_listen_trade_streams
+from src.crypto_api.binance_websocket import CryptoWebsocket, get_crypto_websocket
 from src.db.main import get_db, DBConfig, initialize_beanie
 
 
 class CoinCollectionStream:
 
-    def __init__(self, db: AsyncIOMotorDatabase) -> None:
-        self.collection = db['Coin']
+    def __init__(self, db: AsyncIOMotorDatabase, crypto_ws: CryptoWebsocket) -> None:
+        self.collection = db['TrackedCrypto']
+        self.crypto_ws = crypto_ws
 
     async def watch_changes_in_coin_collection(self) -> None:
         pipeline = [{'$match': {}}]
@@ -19,7 +20,7 @@ class CoinCollectionStream:
                 change = await change_stream.try_next()
 
                 if change is not None:
-                    asyncio.create_task(start_listen_trade_streams())
+                    await self.crypto_ws.start_listening()
                     continue
 
                 await asyncio.sleep(1)
@@ -27,10 +28,10 @@ class CoinCollectionStream:
     async def is_coin_collection_empty(self) -> bool:
         return True if await self.collection.count_documents(filter={}) == 0 else False
 
-    async def run_coin_streaming(self):
+    async def run_coin_streaming(self) -> None:
 
         if not await self.is_coin_collection_empty():
-            asyncio.create_task(start_listen_trade_streams())
+            await self.crypto_ws.start_listening()
 
         await self.watch_changes_in_coin_collection()
 
@@ -42,6 +43,8 @@ def run_coin_streaming_process():
 
     event_loop.run_until_complete(initialize_beanie(db=mongo_db))
 
-    coin_stream = CoinCollectionStream(db=mongo_db)
+    crypto_ws = event_loop.run_until_complete(get_crypto_websocket())
+
+    coin_stream = CoinCollectionStream(db=mongo_db, crypto_ws=crypto_ws)
 
     event_loop.run_until_complete(coin_stream.run_coin_streaming())

@@ -11,8 +11,6 @@ from src.db.models.price_log import PriceLog
 from src.db.models.tracking_crypto import TrackedCrypto
 from src.db.models.user import User
 
-from src.crypto_api.binance_websocket import start_listen_trade_streams
-
 
 @dataclass
 class DBConfig:
