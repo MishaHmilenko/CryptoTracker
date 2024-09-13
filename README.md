@@ -13,6 +13,8 @@ Project stack:
 -Binance WebSocket
 -Docker/docker-desctop
 ```
+>the project is written to strengthen technical skills 
+
 ## Project Deployment
 
 1. Clone repository
